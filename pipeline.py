@@ -4,12 +4,15 @@ import sql_queries as sql
 import csv
 
 def drop_tables(cur, conn):
+	cur.execute(sql.foreign_key_off)
 	for query in sql.drop_table_queries:
 		try:
 			cur.execute(query)
 			conn.commit()
 		except:
 			break
+	cur.execute(sql.foreign_key_on)
+	conn.commit()
 
 def create_tables(cur, conn):
 	for query in sql.create_table_queries:
@@ -20,15 +23,12 @@ def create_tables(cur, conn):
 			break
 
 def load_tables(cur, conn):
-	source_data = csv.reader(open('output.csv'))
+	source_data = csv.reader(open('output.csv', 'r'))
 	next(source_data)
 	for query in sql.load_table_queries:
 		for row in source_data:
-			try:
-				cur.execute(query, [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11]])
-				conn.commit()
-			except:
-				break
+			cur.execute(query, [col for col in row])
+			conn.commit()
 
 def insert_tables(cur, conn):
 	for query in sql.insert_table_queries:
@@ -47,8 +47,8 @@ def main():
 
     drop_tables(cur, conn)
     create_tables(cur, conn)
-#    load_tables(cur, conn)
-#    insert_tables(cur, conn)
+    load_tables(cur, conn)
+    insert_tables(cur, conn)
 
     conn.close()
 
