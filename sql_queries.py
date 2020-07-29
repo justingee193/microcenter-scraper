@@ -52,9 +52,7 @@ brand_table_create = ("""
 CREATE TABLE IF NOT EXISTS brand
 (
 	brand_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	brand_name VARCHAR(150) NOT NULL,
-	category_id INTEGER NOT NULL,
-	FOREIGN KEY (category_id) REFERENCES category(category_id)
+	brand_name VARCHAR(150) NOT NULL
 );
 """)
 
@@ -64,11 +62,13 @@ CREATE TABLE IF NOT EXISTS product
 	product_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	product_name VARCHAR(200) NOT NULL,
 	brand_id INTEGER NOT NULL,
+	category_id INTEGER NOT NULL,
 	price FLOAT(2) NOT NULL,
 	store_id INTEGER NOT NULL,
 	rating VARCHAR(10) NOT NULL,
 	offer VARCHAR(255) NOT NULL,
-	FOREIGN KEY (brand_id) REFERENCES brand(brand_id)
+	FOREIGN KEY (brand_id) REFERENCES brand(brand_id),
+	FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 """)
 
@@ -93,15 +93,15 @@ FROM raw_data AS rd
 """)
 
 brand_table_insert = ("""
-INSERT INTO brand (brand_name, category_id)
-SELECT DISTINCT rd.brand_name, cat.category_id
-FROM raw_data AS rd, category AS cat
+INSERT INTO brand (brand_name)
+SELECT DISTINCT rd.brand_name
+FROM raw_data AS rd
 """)
 
 product_table_insert = ("""
-INSERT INTO product (product_name, brand_id, price, store_id, rating, offer)
-SELECT rd.product_name, b.brand_id, rd.price, rd.store_id, rd.rating, rd.offer
-FROM raw_data AS rd, brand as b
+INSERT INTO product (product_name, brand_id, category_id, price, store_id, rating, offer)
+SELECT rd.product_name, b.brand_id, cat.category_id, rd.price, rd.store_id, rd.rating, rd.offer
+FROM raw_data AS rd, brand AS b, category AS cat
 """)
 
 # QUERY LISTS
