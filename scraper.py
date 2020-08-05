@@ -25,7 +25,7 @@ for store, id in stores.items():
 				headers = {'User-Agent' : 'Mozilla/5.0'}
 
 				req = requests.get(url, headers=headers).text.encode('utf-8')
-				source = BeautifulSoup(req, "lxml")
+				source = BeautifulSoup(req, "html.parser")
 
 				containers = source.find_all('div', { 'class' : "detail_wrapper"})
 			except HTTPError as e:
@@ -87,7 +87,7 @@ for store, id in stores.items():
 				try:
 					reviews = container.find('div', {"class" : "ratingstars"}).span.text.strip()
 				except:
-					reviews = 'null'
+					reviews = '0'
 
 				try:
 					offer = container.find('div', {"class" : "highlight clear"}).text.strip()

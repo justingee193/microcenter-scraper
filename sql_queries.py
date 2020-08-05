@@ -59,16 +59,17 @@ CREATE TABLE IF NOT EXISTS brand
 product_table_create = ("""
 CREATE TABLE IF NOT EXISTS product
 (
-	product_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	product_id INTEGER NOT NULL,
 	product_name VARCHAR(200) NOT NULL,
-	brand_id INTEGER NOT NULL,
-	category_id INTEGER NOT NULL,
 	price FLOAT(2) NOT NULL,
+	stock VARCHAR(20) NOT NULL,
 	store_id INTEGER NOT NULL,
 	rating VARCHAR(10) NOT NULL,
+	reviews VARCHAR(15) NOT NULL,
 	offer VARCHAR(255) NOT NULL,
-	FOREIGN KEY (brand_id) REFERENCES brand(brand_id),
-	FOREIGN KEY (category_id) REFERENCES category(category_id)
+    brand_name VARCHAR(150),
+	category_name VARCHAR(150) NOT NULL
 );
 """)
 
@@ -99,9 +100,24 @@ FROM raw_data AS rd
 """)
 
 product_table_insert = ("""
-INSERT INTO product (product_name, brand_id, category_id, price, store_id, rating, offer)
-SELECT rd.product_name, b.brand_id, cat.category_id, rd.price, rd.store_id, rd.rating, rd.offer
-FROM raw_data AS rd, brand AS b, category AS cat
+INSERT INTO product (product_id, product_name, price, stock, store_id, rating, reviews, offer, brand_name, category_name)
+SELECT rd.product_id, rd.product_name, rd.price, rd.stock, rd.store_id, rd.rating, rd.reviews, rd.offer, rd.brand_name, rd.category_name
+FROM raw_data AS rd;
+
+ALTER TABLE product ADD brand_id INTEGER;
+UPDATE product AS p, brand AS b
+SET p.brand_id = b.brand_id
+WHERE p.brand_name = b.brand_name;
+
+ALTER table product ADD category_id INTEGER;
+UPDATE product AS p, category AS cat
+SET p.category_id = cat.category_id
+WHERE p.category_name = cat.category_name;
+
+ALTER TABLE product DROP brand_name;
+ALTER TABLE product DROP category_name;
+ALTER TABLE product ADD CONSTRAINT brand_id FOREIGN KEY (brand_id) REFERENCES brand(brand_id);
+ALTER TABLE product ADD CONSTRAINT category_id FOREIGN KEY (category_id) REFERENCES category(category_id);
 """)
 
 # QUERY LISTS
