@@ -16,11 +16,11 @@ pass = <PASSWORD>
 ```
 data-analysis.ipynb - Simple data analysis of collected data extracted from MySQL database
 
-output.csv - temporary store of collected data before preprocessing
+output.csv - Temporary store of collected data before preprocessing
 
 pipeline.py - Contains class to handle ETL process (i.e. dropping, creating, loading, and inserting tables)
 
-scraper.py - Contains class to parse and handlde results returned from the url request
+scraper.py - Contains class to parse and handle results returned from the url request
 
 sql_queries.py - Contains queries to create schema and tables in MySQL database and insert statement format
 
